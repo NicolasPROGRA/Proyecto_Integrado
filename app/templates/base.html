@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Portal de atención usuaria - Departamento de Salud Municipal de Padre Las Casas">
+<title>{% block title %}Tu voz importa{% endblock %} · Salud Municipal Padre Las Casas</title>
+<link rel="stylesheet" href="{{ url_for('static', path='/prototipo_base.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', path='/backend.css') }}">
+</head>
+<body>
+<header class="site-header"><div class="head">
+<a class="brand brand-link" href="/" aria-label="Inicio Salud Municipal Padre Las Casas"><span class="institutional-logo-wrap logo-header"><img src="{{ url_for('static', path='/assets/logo_salud_municipal.jpg') }}" alt="Logotipo del Departamento de Salud Municipal de Padre Las Casas"></span><span class="brand-names">Salud Municipal <strong>Padre Las Casas</strong><small>Tu voz, una mejor atención</small></span></a>
+<button type="button" id="menu-toggle" class="menu-toggle" aria-controls="main-nav" aria-expanded="false">☰ Menú</button>
+<nav id="main-nav" aria-label="Menú principal">
+<a href="/">Inicio</a><a href="/solicitud">Compartir experiencia</a><a href="/encuesta">Encuesta</a><a href="/seguimiento">Seguimiento</a>
+{% if current_user %}<a href="/funcionarios/panel" class="nav-admin">Panel interno ↗</a>{% else %}<a href="/funcionarios/login" class="nav-admin">Acceso funcionarios ↗</a>{% endif %}
+</nav>
+</div></header>
+<div class="banner" role="note"><span aria-hidden="true">✳</span> ENTORNO ACADÉMICO DE DESARROLLO · No ingresar información real ni datos clínicos. La base de datos funciona localmente.</div>
+<main class="backend-main">
+{% if notice and notice.text %}<div class="notice-bar"><strong>📣 Información para la comunidad:</strong> {{ notice.text }}</div>{% endif %}
+{% block content %}{% endblock %}
+</main>
+<footer class="site-footer">Departamento de Salud Municipal de Padre Las Casas · Proyecto académico en desarrollo · <a href="https://salud.padrelascasas.cl/" target="_blank" rel="noopener noreferrer">Sitio institucional ↗</a></footer>
+<script src="{{ url_for('static', path='/backend.js') }}" defer></script>
+</body></html>

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}{% block title %}Compartir experiencia{% endblock %}{% block content %}
+<section class="page-intro"><span class="section-kicker">ESTAMOS AQUÍ PARA ESCUCHARTE</span><h1>Cuéntanos tu experiencia</h1><p>Registra un reclamo, sugerencia o agradecimiento. No necesitas crear una cuenta.</p></section>
+<div class="wide-form"><div class="surface-box padded">
+{% if error %}<div class="form-error" role="alert">{{ error }}</div>{% endif %}
+<form action="/solicitud" method="post" class="real-form">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<fieldset><legend>¿Qué deseas compartir?</legend><div class="choice-grid">{% for kind,emoji in [('Reclamo','💬'),('Sugerencia','💡'),('Agradecimiento','💗')] %}
+<label class="choice-radio"><input type="radio" name="case_type" value="{{ kind }}" {% if selected_type==kind %}checked{% endif %} required><span>{{ emoji }} {{ kind }}</span></label>{% endfor %}</div></fieldset>
+<div class="form-grid"><div class="field"><label for="facility">Establecimiento</label><select name="facility" id="facility" required><option value="">Selecciona uno</option>{% for facility in facilities %}<option value="{{ facility }}">{{ facility }}</option>{% endfor %}</select></div>
+<div class="field"><label for="category">Motivo principal</label><select name="category" id="category" required><option value="">Selecciona uno</option>{% for category in categories %}<option value="{{ category }}">{{ category }}</option>{% endfor %}</select></div></div>
+<div class="field"><label for="source_area">Área relacionada (opcional)</label><input type="text" name="source_area" id="source_area" maxlength="100" placeholder="Ej.: recepción, farmacia, SOME"></div>
+<div class="field"><label for="description">Cuéntanos qué ocurrió</label><textarea name="description" id="description" required minlength="15" maxlength="500" rows="6" placeholder="Describe tu experiencia con tus propias palabras (mínimo 15 caracteres)"></textarea><small id="description-counter">0 / 500 caracteres</small></div>
+<div class="privacy-tip">🔒 No ingreses RUT, diagnósticos ni datos sensibles. Al registrar la solicitud recibirás un código privado de seguimiento.</div>
+<button class="btn-main" type="submit">Enviar mi solicitud →</button>
+</form></div></div>
+{% endblock %}

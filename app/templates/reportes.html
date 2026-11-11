@@ -1,0 +1,4 @@
+{% extends 'funcionarios_base.html' %}{% block title %}Reportes{% endblock %}{% block staff_content %}
+<section class="page-intro left"><span class="section-kicker">INDICADORES</span><h1>Reportes y estadísticas</h1><p>Resumen de las solicitudes visibles para tu perfil.</p></section>
+<div class="report-grid"><div class="surface-box padded"><h2>Por tipo de registro</h2>{% for label, value in by_type %}<div class="report-line"><span>{{ label }}</span><strong>{{ value }}</strong></div>{% endfor %}</div><div class="surface-box padded"><h2>Por estado</h2>{% for label, value in by_status %}<div class="report-line"><span>{{ label }}</span><strong>{{ value }}</strong></div>{% endfor %}</div>{% if user.role in ('admin','jefatura') %}<div class="surface-box padded"><h2>Encuestas</h2><p><strong>{{ survey_count }}</strong> respuestas registradas</p><p>Valoración promedio: <strong>{{ avg if avg is not none else 'Sin datos' }}</strong></p></div>{% endif %}</div>
+{% endblock %}

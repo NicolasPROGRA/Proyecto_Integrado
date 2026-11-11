@@ -1,0 +1,31 @@
+{% extends 'base.html' %}{% block title %}Inicio{% endblock %}{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <span class="hero-tag"><span class="hero-tag-dot"></span> Tu opinión hace la diferencia</span>
+    <h1>Queremos <span class="hero-emphasis">escucharte.</span><br>Tu experiencia importa.</h1>
+    <p class="hero-description">En Salud Municipal Padre Las Casas queremos mejorar cada día. Comparte cómo fue tu atención, deja una sugerencia o revisa el estado de tu solicitud.</p>
+    <div class="hero-buttons"><a class="btn-main" href="/solicitud">Compartir mi experiencia →</a><a class="btn-soft" href="/seguimiento">Revisar mi solicitud</a></div>
+    <div class="hero-benefits"><span><span class="mini-check">✓</span> Sin crear una cuenta</span><span><span class="mini-check">✓</span> Fácil desde tu celular</span></div>
+  </div>
+  <div class="hero-art">
+    <div class="orb orb-one"></div><div class="orb orb-two"></div>
+    <div class="float-note float-note-top"><span class="float-dot">❤</span> Estamos para escucharte</div>
+    <div class="feedback-card"><div class="feedback-top"><div class="feedback-icon">♥</div><span class="feedback-small">Salud Municipal · Desarrollo</span></div>
+      <div class="feedback-art"><span class="art-head">☺</span></div>
+      <h2>¿Cómo fue tu atención?</h2><p>Tu experiencia nos ayuda a reconocer qué podemos mejorar.</p>
+      <div class="faces">{% for icon in ['😞','🙁','😐','🙂','😄'] %}<a href="/encuesta" aria-label="Ir a encuesta de satisfacción">{{ icon }}</a>{% endfor %}</div>
+      <span class="feedback-hint">Responde una breve encuesta de satisfacción</span>
+    </div>
+    <div class="float-note float-note-bottom"><span class="float-check">✓</span> Tu voz es importante</div>
+  </div>
+</section>
+<div class="home-section-head" id="participa"><div><span class="section-kicker">TE LO HACEMOS FÁCIL</span><h2>¿En qué podemos ayudarte?</h2></div><p>Elige una opción. Solo te pediremos lo necesario para registrar tu experiencia.</p></div>
+<div class="action-grid">
+<a class="action-card complaint" href="/solicitud?tipo=Reclamo"><span class="action-icon">💬</span><span class="action-name">Hacer un reclamo</span><span class="action-text">Si algo no salió bien, cuéntanos lo ocurrido.</span><span class="action-link">Cuéntanos qué pasó ↗</span></a>
+<a class="action-card suggestion" href="/solicitud?tipo=Sugerencia"><span class="action-icon">💡</span><span class="action-name">Dar una sugerencia</span><span class="action-text">¿Tienes una idea para mejorar? Nos gustaría conocerla.</span><span class="action-link">Compartir una idea ↗</span></a>
+<a class="action-card thanks" href="/solicitud?tipo=Agradecimiento"><span class="action-icon">💗</span><span class="action-name">Dar las gracias</span><span class="action-text">Reconoce un buen trato o una atención positiva.</span><span class="action-link">Enviar agradecimiento ↗</span></a>
+<a class="action-card survey" href="/encuesta"><span class="action-icon">😊</span><span class="action-name">Responder encuesta</span><span class="action-text">Una opinión breve puede generar grandes mejoras.</span><span class="action-link">Empezar encuesta ↗</span></a>
+</div>
+<div class="follow-banner"><div class="follow-illustration" aria-hidden="true">📋</div><div class="follow-copy"><span class="section-kicker">¿YA NOS ESCRIBISTE?</span><h2>Conoce el avance de tu solicitud</h2><p>Con tu folio y código privado podrás consultar el estado.</p></div><a class="btn-dark" href="/seguimiento">Consultar seguimiento →</a></div>
+<div class="how-wrap"><div class="how-header"><span class="section-kicker">PASO A PASO</span><h2>Participar es muy sencillo</h2><p>No necesitas conocimientos técnicos para compartir tu experiencia.</p></div><div class="how-grid"><div class="how-step"><span class="step-num">01</span><h3>Elige una opción</h3><p>Selecciona reclamo, sugerencia, agradecimiento o encuesta.</p></div><div class="how-step"><span class="step-num">02</span><h3>Cuéntanos tu experiencia</h3><p>Completa un formulario breve, con palabras simples.</p></div><div class="how-step"><span class="step-num">03</span><h3>Guarda tu comprobante</h3><p>Para seguir tu caso necesitas folio y código privado.</p></div></div></div>
+{% endblock %}

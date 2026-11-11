@@ -1,0 +1,4 @@
+{% extends 'funcionarios_base.html' %}{% block title %}Avisos públicos{% endblock %}{% block staff_content %}
+<section class="page-intro left"><span class="section-kicker">COMUNICACIONES</span><h1>Avisos para la comunidad</h1><p>Esta información aparecerá en el portal ciudadano.</p></section>
+<div class="wide-form"><div class="surface-box padded"><form method="post" action="/funcionarios/avisos" class="real-form"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><div class="field"><label for="text">Mensaje público</label><textarea name="text" id="text" rows="5" maxlength="500" placeholder="Escribe un aviso breve...">{{ text }}</textarea></div><button class="btn-main">Publicar cambios →</button></form>{% if request.query_params.get('guardado') %}<p class="success-text">✓ Aviso actualizado.</p>{% endif %}</div></div>
+{% endblock %}

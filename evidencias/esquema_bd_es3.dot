@@ -1,0 +1,19 @@
+digraph esquema_es3 {
+  graph [rankdir=TB, bgcolor="white", nodesep=0.5, ranksep=0.5, pad=0.25, splines=polyline];
+  node [shape=record, fontname="DejaVu Sans", fontsize=10, style="filled", fillcolor="#E9F5F3", color="#67968C", margin="0.14,0.09"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#427A70", arrowsize=0.7];
+
+  units [label="{units | id PK | name UNIQUE | description | active}"];
+  staff [label="{staff | id PK | unit_id FK | email UNIQUE | role | password_hash}"];
+  cases [label="{cases | id PK | unit_id FK | folio UNIQUE | case_type | category | status}"];
+  events [label="{case_events | id PK | case_id FK | actor_id FK opcional | action | note | created_at}"];
+  surveys [label="{surveys | id PK | rating CHECK 1..5 | facility | aspect | created_at}"];
+  notices [label="{notices | id PK | editor_id FK opcional | text | updated_at}"];
+
+  units -> staff [label="1:N", arrowhead=none];
+  units -> cases [label="1:N", arrowhead=none];
+  cases -> events [label="1:N", arrowhead=none];
+  staff -> events [label="1:N opc.", arrowhead=none];
+  staff -> notices [label="1:N opc.", arrowhead=none];
+  surveys -> cases [style=invis];
+}

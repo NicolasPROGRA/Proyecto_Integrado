@@ -3,15 +3,18 @@ setlocal
 chcp 65001 >nul
 cd /d "%~dp0"
 echo ==============================================
-echo Salud PLC - Inicio compatible con Python 3.15
+echo Salud PLC - Evaluacion ES3 con PostgreSQL
 echo ==============================================
+if not exist ".env" (
+  echo Primero configura tu BD con CONFIGURAR_POSTGRESQL_WINDOWS.bat
+  pause
+  exit /b 1
+)
 if not exist ".venv\Scripts\python.exe" (
   echo [1/3] Creando entorno virtual...
-  py -3.15 -m venv .venv
-  if errorlevel 1 (
-    echo No se encontro py -3.15; intentando con Python predeterminado...
-    py -m venv .venv
-  )
+  py -3.13 -m venv .venv 2>nul
+  if errorlevel 1 py -3.12 -m venv .venv 2>nul
+  if errorlevel 1 py -m venv .venv
   if errorlevel 1 (
     echo ERROR: No se pudo crear el entorno virtual. Comprueba py -0p
     pause
@@ -35,6 +38,14 @@ if errorlevel 1 (
 ".venv\Scripts\python.exe" -c "import fastapi, uvicorn, sqlalchemy, pydantic, argon2; print('Dependencias principales comprobadas.')"
 if errorlevel 1 (
   echo ERROR: Falta alguna biblioteca o es incompatible.
+  pause
+  exit /b 1
+)
+echo.
+echo Comprobando PostgreSQL y 14 tablas...
+".venv\Scripts\python.exe" -m app.verificar_postgres
+if errorlevel 1 (
+  echo ERROR: PostgreSQL no esta preparado. Ejecuta CONFIGURAR_POSTGRESQL_WINDOWS.bat
   pause
   exit /b 1
 )

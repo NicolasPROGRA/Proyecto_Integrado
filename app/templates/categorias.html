@@ -1,0 +1,32 @@
+{% extends 'funcionarios_base.html' %}
+{% block title %}Categorías{% endblock %}
+{% block staff_content %}
+<section class="page-intro left"><span class="section-kicker">CONFIGURACIÓN DE ATENCIÓN</span><h1>Categorías de solicitudes</h1><p>Administra los motivos disponibles en los formularios ciudadanos. Desactivar una categoría no elimina sus registros históricos.</p></section>
+{% if request.query_params.get('guardado') %}<div class="surface-box padded" role="status"><strong>Configuración guardada correctamente.</strong></div>{% endif %}
+<div class="detail-layout">
+  <div class="surface-box padded">
+    <h2>Categorías registradas</h2>
+    {% for category in category_rows %}
+    <div class="report-line">
+      <div><strong>{{ category.name }}</strong><small>{{ 'Disponible para nuevos registros' if category.active else 'Desactivada; se conserva para el historial' }}</small></div>
+      {% if category.name == 'Otro' %}<span>Siempre activa</span>{% else %}
+      <form action="/funcionarios/categorias/{{ category.id }}/estado" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="btn-soft" type="submit" aria-label="{{ 'Desactivar' if category.active else 'Activar' }} categoría {{ category.name }}">{{ 'Desactivar' if category.active else 'Activar' }}</button>
+      </form>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  <div class="surface-box padded">
+    <h2>Agregar categoría</h2>
+    <p>Se mostrará en reclamos, sugerencias, agradecimientos y encuestas.</p>
+    <form method="post" action="/funcionarios/categorias" class="real-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      {% if error %}<div class="form-error" role="alert">{{ error }}</div>{% endif %}
+      <div class="field"><label for="name">Nombre de la categoría</label><input id="name" name="name" value="{{ (values or {}).get('name', '') }}" minlength="3" maxlength="70" required></div>
+      <button type="submit" class="btn-main">Guardar categoría →</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

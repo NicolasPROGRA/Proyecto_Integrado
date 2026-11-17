@@ -5,7 +5,7 @@ Ejemplo: python -m app.crear_admin
 import getpass
 from sqlalchemy import select
 from .database import init_database, SessionLocal
-from .models import Unit, Staff
+from .models import Unit, Staff, Role
 from .security import hash_password
 
 def main():
@@ -26,7 +26,12 @@ def main():
         if not unit:
             print('No existe la unidad Dirección')
             return
-        db.add(Staff(full_name=name, email=email, password_hash=hash_password(password), role='admin', unit_id=unit.id, active=True))
+        role = db.scalar(select(Role).where(Role.code == 'admin'))
+        if not role:
+            print('No existe el rol Administración')
+            return
+        db.add(Staff(full_name=name, email=email, password_hash=hash_password(password),
+                     role_id=role.id, unit_id=unit.id, active=True))
         db.commit()
     print('Cuenta administradora creada. Ingresa en /funcionarios/login')
 

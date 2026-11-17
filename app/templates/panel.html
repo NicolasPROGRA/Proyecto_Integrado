@@ -1,5 +1,27 @@
-{% extends 'funcionarios_base.html' %}{% block title %}Panel de gestión{% endblock %}{% block staff_content %}
-<section class="page-intro left"><span class="section-kicker">GESTIÓN DE ATENCIÓN USUARIA</span><h1>Panel de solicitudes</h1><p>Hola, {{ user.full_name }}. Ves solo los registros permitidos por tu rol y unidad.</p></section>
-<div class="metric-row"><div class="metric-card"><span>Solicitudes visibles</span><strong>{{ totals.total }}</strong></div><div class="metric-card"><span>En seguimiento</span><strong>{{ totals.open }}</strong></div><div class="metric-card"><span>Casos cerrados</span><strong>{{ totals.closed }}</strong></div></div>
-<div class="surface-box padded"><h2>Solicitudes recibidas</h2><div class="table-scroll"><table class="cases-table"><thead><tr><th>Folio</th><th>Tipo</th><th>Establecimiento</th><th>Unidad</th><th>Estado</th><th>Acción</th></tr></thead><tbody>{% for case in cases %}<tr><td><strong>{{ case.folio }}</strong><small>{{ case.created_at.strftime('%d/%m/%Y') }}</small></td><td>{{ case.case_type }}</td><td>{{ case.facility }}</td><td>{{ case.unit.name }}</td><td><span class="case-pill">{{ case.status }}</span></td><td><a class="table-link" href="/funcionarios/casos/{{ case.id }}">Abrir →</a></td></tr>{% else %}<tr><td colspan="6">Todavía no hay solicitudes para este perfil.</td></tr>{% endfor %}</tbody></table></div></div>
+{% extends 'funcionarios_base.html' %}
+{% block title %}Panel de gestión{% endblock %}
+{% block staff_content %}
+<section class="page-intro left"><span class="section-kicker">GESTIÓN DE ATENCIÓN USUARIA</span><h1>Panel de solicitudes</h1><p>Hola, {{ user.full_name }}. Solo puedes consultar los registros autorizados para tu rol y unidad.</p></section>
+<div class="metric-row">
+  <div class="metric-card"><span>Solicitudes visibles</span><strong>{{ totals.total }}</strong></div>
+  <div class="metric-card"><span>En seguimiento</span><strong>{{ totals.open }}</strong></div>
+  <div class="metric-card"><span>Casos cerrados</span><strong>{{ totals.closed }}</strong></div>
+</div>
+<div class="surface-box padded"><h2>Buscar y clasificar solicitudes</h2>
+  <form action="/funcionarios/panel" method="get" class="real-form filters-form">
+    <div class="field"><label for="q">Buscar por folio o descripción</label><input id="q" name="q" type="search" maxlength="80" value="{{ filters.q }}" placeholder="Ej.: PLC- o tiempo de espera"></div>
+    <div class="field"><label for="status">Estado</label><select id="status" name="status"><option value="">Todos</option>{% for item in states %}<option value="{{ item }}" {% if filters.status == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="case_type">Tipo</label><select id="case_type" name="case_type"><option value="">Todos</option>{% for item in types %}<option value="{{ item }}" {% if filters.case_type == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="category">Categoría</label><select id="category" name="category"><option value="">Todas</option>{% for item in all_categories %}<option value="{{ item }}" {% if filters.category == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="facility">Establecimiento</label><select id="facility" name="facility"><option value="">Todos</option>{% for item in facilities %}<option value="{{ item }}" {% if filters.facility == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></div>
+    <div class="filter-actions"><button class="btn-main" type="submit">Aplicar filtros</button><a class="btn-soft" href="/funcionarios/panel">Limpiar</a></div>
+  </form>
+</div>
+<div class="surface-box padded cases-results"><h2>Solicitudes recibidas <small>({{ filtered_count }} resultados)</small></h2>
+  <div class="table-scroll"><table class="cases-table"><thead><tr><th>Folio</th><th>Tipo</th><th>Establecimiento</th><th>Categoría</th><th>Unidad</th><th>Estado</th><th>Acción</th></tr></thead><tbody>
+    {% for case in cases %}<tr><td><strong>{{ case.folio }}</strong><small>{{ case.created_at.strftime('%d/%m/%Y') }}</small></td><td>{{ case.case_type }}</td><td>{{ case.facility }}</td><td>{{ case.category }}</td><td>{{ case.unit.name }}</td><td><span class="case-pill">{{ case.status }}</span></td><td><a class="table-link" href="/funcionarios/casos/{{ case.id }}">Abrir →</a></td></tr>
+    {% else %}<tr><td colspan="7">No se encontraron solicitudes para los filtros elegidos.</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% if page_count > 1 %}<nav class="pagination" aria-label="Páginas de solicitudes"><span>Página {{ page }} de {{ page_count }}</span>{% if page > 1 %}<a href="{{ request.url.include_query_params(page=page-1) }}">← Anterior</a>{% endif %}{% if page < page_count %}<a href="{{ request.url.include_query_params(page=page+1) }}">Siguiente →</a>{% endif %}</nav>{% endif %}
+</div>
 {% endblock %}

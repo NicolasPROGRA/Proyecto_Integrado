@@ -1,16 +1,20 @@
 {% extends 'base.html' %}{% block title %}Compartir experiencia{% endblock %}{% block content %}
 <section class="page-intro"><span class="section-kicker">ESTAMOS AQUÍ PARA ESCUCHARTE</span><h1>Cuéntanos tu experiencia</h1><p>Registra un reclamo, sugerencia o agradecimiento. No necesitas crear una cuenta.</p></section>
 <div class="wide-form"><div class="surface-box padded">
-{% if error %}<div class="form-error" role="alert">{{ error }}</div>{% endif %}
-<form action="/solicitud" method="post" class="real-form">
+<form action="/solicitud" method="post" class="real-form" enctype="multipart/form-data">
 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+{% if error %}<div class="form-error" role="alert">{{ error }} Revisa los campos y vuelve a intentarlo.</div>{% endif %}
 <fieldset><legend>¿Qué deseas compartir?</legend><div class="choice-grid">{% for kind,emoji in [('Reclamo','💬'),('Sugerencia','💡'),('Agradecimiento','💗')] %}
-<label class="choice-radio"><input type="radio" name="case_type" value="{{ kind }}" {% if selected_type==kind %}checked{% endif %} required><span>{{ emoji }} {{ kind }}</span></label>{% endfor %}</div></fieldset>
-<div class="form-grid"><div class="field"><label for="facility">Establecimiento</label><select name="facility" id="facility" required><option value="">Selecciona uno</option>{% for facility in facilities %}<option value="{{ facility }}">{{ facility }}</option>{% endfor %}</select></div>
-<div class="field"><label for="category">Motivo principal</label><select name="category" id="category" required><option value="">Selecciona uno</option>{% for category in categories %}<option value="{{ category }}">{{ category }}</option>{% endfor %}</select></div></div>
-<div class="field"><label for="source_area">Área relacionada (opcional)</label><input type="text" name="source_area" id="source_area" maxlength="100" placeholder="Ej.: recepción, farmacia, SOME"></div>
-<div class="field"><label for="description">Cuéntanos qué ocurrió</label><textarea name="description" id="description" required minlength="15" maxlength="500" rows="6" placeholder="Describe tu experiencia con tus propias palabras (mínimo 15 caracteres)"></textarea><small id="description-counter">0 / 500 caracteres</small></div>
-<div class="privacy-tip">🔒 No ingreses RUT, diagnósticos ni datos sensibles. Al registrar la solicitud recibirás un código privado de seguimiento.</div>
+<label class="choice-radio"><input type="radio" name="case_type" value="{{ kind }}" {% if (values or {}).get('case_type', selected_type)==kind %}checked{% endif %} required><span>{{ emoji }} {{ kind }}</span></label>{% endfor %}</div></fieldset>
+<div class="form-grid"><div class="field"><label for="facility">Establecimiento</label><select name="facility" id="facility" required><option value="">Selecciona uno</option>{% for facility in facilities %}<option value="{{ facility }}" {% if (values or {}).get('facility')==facility %}selected{% endif %}>{{ facility }}</option>{% endfor %}</select></div>
+<div class="field"><label for="category">Motivo principal</label><select name="category" id="category" required><option value="">Selecciona uno</option>{% for category in categories %}<option value="{{ category }}" {% if (values or {}).get('category')==category %}selected{% endif %}>{{ category }}</option>{% endfor %}</select></div></div>
+<div class="field"><label for="source_area">Área relacionada (opcional)</label><input type="text" name="source_area" id="source_area" maxlength="100" value="{{ (values or {}).get('source_area', '') }}" placeholder="Ej.: recepción, farmacia, SOME"></div>
+<div class="field"><label for="description">Cuéntanos qué ocurrió</label><textarea name="description" id="description" required minlength="15" maxlength="500" rows="6" placeholder="Describe tu experiencia con tus propias palabras (mínimo 15 caracteres)">{{ (values or {}).get('description', '') }}</textarea><small id="description-counter">0 / 500 caracteres</small></div>
+<div class="field"><label for="attachment">Adjunto (opcional, PDF, PNG o JPG, máximo 2 MB)</label><input type="file" name="attachment" id="attachment" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg"></div>
+<fieldset><legend>Datos de contacto voluntarios</legend><p>Si deseas recibir una respuesta, puedes compartir un nombre o alias y un correo electrónico. No es obligatorio.</p>
+<div class="form-grid"><div class="field"><label for="contact_name">Nombre o alias</label><input type="text" name="contact_name" id="contact_name" maxlength="100" value="{{ (values or {}).get('contact_name', '') }}"></div><div class="field"><label for="contact_email">Correo de contacto</label><input type="email" name="contact_email" id="contact_email" maxlength="255" value="{{ (values or {}).get('contact_email', '') }}"></div></div>
+<div class="field consent-field"><label for="contact_consent"><input id="contact_consent" type="checkbox" name="contact_consent" value="on" {% if (values or {}).get('contact_consent')=='on' %}checked{% endif %}> Autorizo guardar estos datos de contacto para responder esta solicitud.</label><small>Si agregas un nombre o correo, debes escribir un correo válido y aceptar el consentimiento.</small></div></fieldset>
+<div class="privacy-tip">🔒 Para proteger tu privacidad, evita incluir diagnósticos u otros datos médicos sensibles. Al registrar la solicitud recibirás un código privado de seguimiento.</div>
 <button class="btn-main" type="submit">Enviar mi solicitud →</button>
 </form></div></div>
 {% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}No pudimos completar la acción{% endblock %}
+{% block content %}
+<section class="center-card surface-box padded" role="alert">
+  <div class="error-circle" aria-hidden="true">!</div>
+  <span class="section-kicker">AVISO DEL SISTEMA · {{ error_status }}</span>
+  <h1>No pudimos completar esta acción</h1>
+  <p>{{ error_message }}</p>
+  <p>Revisa los datos e inténtalo de nuevo. Si estabas llenando un formulario, puedes volver a la página anterior.</p>
+  <div class="button-row">
+    <button type="button" class="btn-main" data-history-back>← Volver al formulario</button>
+    <a href="/" class="btn-soft">Ir al inicio</a>
+  </div>
+</section>
+{% endblock %}

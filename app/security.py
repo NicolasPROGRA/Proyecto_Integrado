@@ -1,8 +1,10 @@
 """Funciones de protección y reglas de autorización. No sustituye auditoría profesional."""
 import hashlib
 import hmac
+import os
 import secrets
 from pathlib import Path
+from urllib.parse import urlsplit
 from argon2 import PasswordHasher, exceptions
 from fastapi import HTTPException
 from .database import INSTANCE
@@ -53,6 +55,14 @@ def verify_csrf(request, submitted):
     csrf = request.session.get('csrf')
     if not csrf or not hmac.compare_digest(str(csrf), str(submitted)):
         raise HTTPException(403, 'Token de formulario inválido. Actualiza la página.')
+    # Un formulario de otro sitio no puede aprovechar una cookie válida.
+    origin = request.headers.get('origin')
+    if origin:
+        expected_origin = f'{request.url.scheme}://{request.url.netloc}'
+        trusted = {expected_origin}
+        trusted.update(value.strip().rstrip('/') for value in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if value.strip())
+        if origin not in trusted or urlsplit(origin).scheme not in ('http', 'https'):
+            raise HTTPException(403, 'El formulario proviene de un sitio no autorizado.')
 
 ROLES = {
     'recepcion': 'Recepción',

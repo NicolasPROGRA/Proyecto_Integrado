@@ -1,0 +1,36 @@
+digraph ModeloES3 {
+  graph [rankdir=LR, bgcolor="white", nodesep=0.26, ranksep=1.1, splines=polyline];
+  node [shape=record, fontname="DejaVu Sans", fontsize=10, color="#337e7a", style=filled, fillcolor="#e6f5f2"];
+  edge [color="#5f797b", arrowsize=0.65, penwidth=1.1];
+  "canal" [label="{CANAL|id PK\lname\l}"];
+  "categoria" [label="{CATEGORIA|id PK\lname\lactive\l}"];
+  "ciudadano" [label="{CIUDADANO|id PK\lalias\lemail\lcontact_consent\lcreated_at\l}"];
+  "estado_caso" [label="{ESTADO_CASO|id PK\lname\l}"];
+  "pregunta_encuesta" [label="{PREGUNTA_ENCUESTA|id PK\lcode\ltext\lactive\l}"];
+  "rol" [label="{ROL|id PK\lcode\llabel\lactive\l}"];
+  "tipo_registro" [label="{TIPO_REGISTRO|id PK\lname\l}"];
+  "unidad" [label="{UNIDAD|id PK\lname\ldescription\lactive\l}"];
+  "registro" [label="{REGISTRO|id PK\lfolio\ltracking_hmac\lrecord_type_id FK\lchannel_id FK\lcategory_id FK\lstatus_id FK\l... 7 más\l}"];
+  "usuario_admin" [label="{USUARIO_ADMIN|id PK\lfull_name\lemail\lpassword_hash\lrole_id FK\lunit_id FK\lactive\l... 1 más\l}"];
+  "adjunto" [label="{ADJUNTO|id PK\lrecord_id FK\loriginal_filename\lstorage_key\lmime_type\lsize_bytes\lcreated_at\l}"];
+  "auditoria" [label="{AUDITORIA|id PK\lactor_id FK\lrecord_id FK\levent_type\ldetails\lcreated_at\l}"];
+  "respuesta_encuesta" [label="{RESPUESTA_ENCUESTA|id PK\lrecord_id FK\lquestion_id FK\lrating\lcreated_at\l}"];
+  "seguimiento" [label="{SEGUIMIENTO|id PK\lcase_id FK\lactor_id FK\lstatus_id FK\ltarget_unit_id FK\laction\lnote\l... 1 más\l}"];
+  "registro" -> "canal" [label="channel_id", fontsize=8];
+  "registro" -> "unidad" [label="unit_id", fontsize=8];
+  "registro" -> "estado_caso" [label="status_id", fontsize=8];
+  "registro" -> "categoria" [label="category_id", fontsize=8];
+  "registro" -> "ciudadano" [label="citizen_id", fontsize=8];
+  "registro" -> "tipo_registro" [label="record_type_id", fontsize=8];
+  "usuario_admin" -> "unidad" [label="unit_id", fontsize=8];
+  "usuario_admin" -> "rol" [label="role_id", fontsize=8];
+  "adjunto" -> "registro" [label="record_id", fontsize=8];
+  "auditoria" -> "registro" [label="record_id", fontsize=8];
+  "auditoria" -> "usuario_admin" [label="actor_id", fontsize=8];
+  "respuesta_encuesta" -> "registro" [label="record_id", fontsize=8];
+  "respuesta_encuesta" -> "pregunta_encuesta" [label="question_id", fontsize=8];
+  "seguimiento" -> "estado_caso" [label="status_id", fontsize=8];
+  "seguimiento" -> "registro" [label="case_id", fontsize=8];
+  "seguimiento" -> "unidad" [label="target_unit_id", fontsize=8];
+  "seguimiento" -> "usuario_admin" [label="actor_id", fontsize=8];
+}

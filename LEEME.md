@@ -18,9 +18,3 @@ Si PowerShell impide la activación de scripts, **no necesitas cambiar su polít
 - **Reportes:** filtros por fecha inicial/final (ambas inclusive), categoría y tipo; resultados limitados al alcance del perfil.
 - **Administración:** usuarios, unidades, categorías (crear/activar/desactivar) y avisos. «Otro» siempre permanece activa y los casos históricos no se eliminan.
 - **Seguridad:** mensajes de error dentro de los formularios, autorización comprobada en el servidor, protección CSRF y de origen, revocación de sesiones cerradas, caducidad por inactividad, auditoría de accesos y cabeceras de seguridad del navegador.
-
-## Evaluación y límites
-
-El 17/11/2026 se ejecutaron **50 pruebas automáticas aprobadas** sobre una SQLite temporal aislada; el equipo mostró capturas de conexión a PostgreSQL 18 con 14 tablas. Antes de entregar, falta comprobar en el equipo Windows un ingreso, una actualización y una consulta SQL real, además del botón Atrás/Adelante tras cerrar sesión. Ver [ES3_DEMOSTRACION.md](ES3_DEMOSTRACION.md) y [ES3_POSTGRESQL.md](ES3_POSTGRESQL.md).
-
-Este sistema es un **piloto académico local**. Los tótems, Rayen, WordPress institucional, el despliegue real, la revisión profesional de accesibilidad y seguridad y la validación con usuarios municipales requieren autorización y recursos externos. No registrar información clínica ni datos personales reales.

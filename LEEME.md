@@ -4,9 +4,7 @@ Este archivo fue actualizado para reemplazar las instrucciones antiguas del prot
 
 ## Instalación rápida con PostgreSQL 18 en Windows
 
-1. Descarga el ZIP ES3 y descomprímelo en una carpeta nueva.
-2. Si ya tienes una instalación anterior, **respalda y conserva** `.env`, `instance/session_secret.key` y `instance/private_uploads`; no copies los datos públicos de otro usuario ni publiques esos archivos.
-3. Ejecuta `CONFIGURAR_POSTGRESQL_WINDOWS.bat`; selecciona la base `salud_plc_es3` y verifica la conexión con el PostgreSQL que ya instalaste.
+3. Ejecuta `CONFIGURAR_POSTGRESQL_WINDOWS.bat`; selecciona la base `salud_plc_es3` y verifica la conexión con el PostgreSQL.
 4. Ejecuta `INICIAR_WINDOWS.bat`; el programa valida el esquema de 14 tablas y arranca el servidor local.
 5. Si no creaste una cuenta administrativa, ejecuta `CREAR_ADMIN_WINDOWS.bat` y elige una contraseña de al menos 12 caracteres.
 6. Abre <http://127.0.0.1:8000> para el portal o <http://127.0.0.1:8000/funcionarios/login> para Gestión.

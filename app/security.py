@@ -51,17 +51,61 @@ def csrf_for(request):
         request.session['csrf'] = secrets.token_urlsafe(32)
     return request.session['csrf']
 
+def _same_local_origin_alias(origin: str, request) -> bool:
+    """localhost y 127.0.0.1 son alternativas locales del mismo servidor."""
+    try:
+        submitted = urlsplit(origin)
+        served = urlsplit(f"{request.url.scheme}://{request.headers.get('host', request.url.netloc)}")
+        loopback = {'localhost', '127.0.0.1', '::1'}
+        default_port = 443 if served.scheme == 'https' else 80
+        return (
+            submitted.scheme == served.scheme
+            and submitted.hostname in loopback
+            and served.hostname in loopback
+            and (submitted.port or default_port) == (served.port or default_port)
+        )
+    except ValueError:
+        return False
+
 def verify_csrf(request, submitted):
     csrf = request.session.get('csrf')
     if not csrf or not hmac.compare_digest(str(csrf), str(submitted)):
         raise HTTPException(403, 'Token de formulario inválido. Actualiza la página.')
-    # Un formulario de otro sitio no puede aprovechar una cookie válida.
+    # CSRF_LOCAL_COMPAT_V2: el servidor de la demostración escucha solo en
+    # loopback. Ahí basta con el token CSRF de sesión: proxies locales,
+    # navegadores y extensiones pueden reconstruir Origin de forma distinta.
+    # El control adicional de Origin/Fetch Metadata permanece para accesos
+    # que no sean completamente locales.
+    local_hosts = {'127.0.0.1', 'localhost', '::1'}
+    if (request.client and request.client.host in local_hosts
+            and request.url.hostname in local_hosts):
+        return
+    # Fetch Metadata es controlado por el navegador; una petición cross-site
+    # se rechaza incluso cuando se presenta un token que coincide.
+    fetch_site = request.headers.get('sec-fetch-site', '').lower()
+    if fetch_site == 'cross-site':
+        raise HTTPException(403, 'El formulario proviene de un sitio no autorizado.')
+
+    # En Windows una app local puede presentarse como localhost o 127.0.0.1,
+    # o tener un esquema/host reconstruido por un proxy. Se acepta la petición
+    # que el navegador identifica como same-origin, conservando el token CSRF.
     origin = request.headers.get('origin')
     if origin:
-        expected_origin = f'{request.url.scheme}://{request.url.netloc}'
+        try:
+            parsed = urlsplit(origin)
+            valid_origin = (
+                parsed.scheme in ('http', 'https') and parsed.hostname
+                and not parsed.username and not parsed.password
+                and not parsed.path and not parsed.query and not parsed.fragment
+            )
+        except ValueError:
+            valid_origin = False
+        if not valid_origin:
+            raise HTTPException(403, 'El formulario proviene de un sitio no autorizado.')
+        expected_origin = f"{request.url.scheme}://{request.headers.get('host', request.url.netloc)}"
         trusted = {expected_origin}
         trusted.update(value.strip().rstrip('/') for value in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if value.strip())
-        if origin not in trusted or urlsplit(origin).scheme not in ('http', 'https'):
+        if origin not in trusted and not _same_local_origin_alias(origin, request) and fetch_site != 'same-origin':
             raise HTTPException(403, 'El formulario proviene de un sitio no autorizado.')
 
 ROLES = {

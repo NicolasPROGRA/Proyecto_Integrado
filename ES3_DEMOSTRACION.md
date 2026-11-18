@@ -28,7 +28,7 @@ Las orientaciones del profesor indican que **no se requiere PowerPoint**. La exp
 ## Preguntas que conviene preparar
 
 - **¿Dónde se guardan los datos?** En la base PostgreSQL indicada en el `.env` local, a través de SQLAlchemy/Psycopg 3. Las pruebas automáticas usan otra SQLite temporal para proteger la base académica.
-- **¿Cómo protegen solicitudes?** Contraseñas Argon2, token CSRF y origen válido, sesión firmada con revocación de cookies al salir, 30 minutos de inactividad, cabeceras CSP/anti-iframe y autorización por rol/unidad. El seguimiento ciudadano usa folio y código privado HMAC. Mostrar CP-33 a CP-36.
+- **¿Cómo protegen solicitudes?** Contraseñas Argon2, token CSRF obligatorio, validación adicional del origen fuera de la máquina local, sesión firmada con revocación de cookies al salir, 30 minutos de inactividad, cabeceras CSP/anti-iframe y autorización por rol/unidad. El seguimiento ciudadano usa folio y código privado HMAC. Mostrar CP-33 a CP-36.
 - **¿Por qué no se puede regresar al panel tras cerrar sesión?** El servidor comprueba la sesión y el registro de revocación en cada ruta; las respuestas privadas llevan `Cache-Control: no-store` y la página verifica el estado al volver desde el historial. Una copia antigua de la cookie tampoco permite ingresar otra vez.
 - **¿Qué evidencia hay de integridad?** 14 tablas con FK, catálogos normalizados, UNIQUE en folio y respuesta/encuesta, CHECK de nota 1–5 y pruebas de rechazo por FK. Mostrar la consulta real en pgAdmin.
 - **¿Cómo cumplen HU-07/RF07 del informe 1?** Los reportes ahora permiten filtrar por fechas inclusivas y categoría, opcionalmente por tipo; el backend aplica primero los permisos por unidad y luego calcula los indicadores. Mostrar el caso de prueba CP-24.

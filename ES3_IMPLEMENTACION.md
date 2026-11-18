@@ -75,7 +75,7 @@ El [documento de comprobación para Windows](ES3_POSTGRESQL.md) detalla consulta
 
 - Contraseñas protegidas con Argon2; la primera cuenta se crea con `python -m app.crear_admin` sin clave predefinida.
 - Cookies de sesión firmadas, `HttpOnly`, `SameSite=Lax` y expiración de dos horas. La opción `COOKIE_SECURE=1` exige HTTPS.
-- Token CSRF verificado en formularios POST y comprobación del encabezado `Origin` cuando viene presente, para rechazar solicitudes de un sitio ajeno.
+- Token CSRF verificado en todos los formularios POST. En la ejecución local (`127.0.0.1`/`localhost`), la validez del token evita bloqueos falsos por encabezados Origin alterados por el navegador o un proxy; en conexiones no locales, se comprueban además Origin y Fetch Metadata para rechazar solicitudes ajenas.
 - Revocación de la sesión en servidor mediante eventos inmutables `inicio_sesion` y `cierre_sesion` de auditoría. Una cookie firmada que se copió antes de cerrar sesión queda invalidada; el código también caduca a los 30 minutos sin actividad. No se modifica la estructura de las 14 tablas.
 - Registro de intentos fallidos de inicio de sesión en auditoría, sin almacenar contraseñas ni tokens privados. El límite de intentos por IP sigue siendo apropiado únicamente para un piloto local.
 - Cabeceras `Content-Security-Policy`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer` y `Permissions-Policy`. Se eliminó JavaScript embebido en atributos HTML para respetar la política de scripts del propio origen. `Strict-Transport-Security` solo se agrega cuando se utiliza HTTPS y `COOKIE_SECURE=1`.
@@ -143,7 +143,7 @@ El protocolo usa `pytest` y `TestClient`, una base SQLite temporal distinta de l
 | CP-30 | Consultar 30 veces un reporte y cerrar sesión | Resultados consistentes; al salir, no acceder al informe | 30 respuestas 200, luego 303; aprobado |
 | CP-31 | Interfaz ciudadana con textos definitivos | No mostrar avisos de desarrollo en Inicio, formularios ni login | Cuatro rutas verificadas; aprobado |
 | CP-32 | Respuestas con cabeceras de seguridad | Bloquear iframes y scripts ajenos; no permitir MIME sniffing | CSP, X-Frame-Options, nosniff y sin handlers inline; aprobado |
-| CP-33 | Formulario externo con CSRF válido robado | Rechazar origen ajeno y no guardar registros | HTTP 403 sin persistencia; origen legítimo 200; aprobado |
+| CP-33 | Origen externo con CSRF válido en entorno no local; origen distinto en equipo local | Rechazar origen ajeno remotamente; admitir envío local con token válido | HTTP 403 no local; HTTP 200 local con token válido; token incorrecto siempre 403; aprobado |
 | CP-34 | Reutilizar cookie antigua tras cerrar sesión | Revocar el identificador en auditoría y negar acceso | HTTP 303/401; auditoría de cierre comprobada; aprobado |
 | CP-35 | Cookie de sesión inactiva 31 minutos | Exigir nueva autenticación | Redirección al login; aprobado |
 | CP-36 | Acceso con contraseña incorrecta | Rechazar sin guardar contraseña; conservar evento de auditoría | HTTP 401 y evento sin secreto; aprobado |
@@ -166,7 +166,7 @@ Los 36 grupos resumen las 50 funciones de prueba en `tests/test_workflow.py`, `t
 | Errores de validación redirigían a una pantalla negra con JSON | Mensajes en el mismo formulario y página HTML temática para errores HTTP | CP-21 y CP-22 | Corregido en código |
 | El historial podía mostrar una vista anterior tras cerrar sesión | Sesión comprobada en cada solicitud, no-store y revalidación al volver | CP-23 | Corregido en código; validar visualmente en Windows |
 | Cookie antigua aún podría estar firmada después de cerrar sesión | Identificadores aleatorios, auditoría de revocación y caducidad por inactividad | CP-34 y CP-35 | Corregido en código |
-| Formularios con token CSRF válidos enviados desde otro origen | Comprobación del encabezado Origin y rechazo en servidor | CP-33 | Corregido en código |
+| Formularios con token CSRF válidos enviados desde otro origen fuera de la máquina local | Comprobación del encabezado Origin y rechazo en servidor; en loopback prevalece el token CSRF | CP-33 | Corregido en código |
 | Falta de cabeceras de defensa y controlador inline | CSP, anti-iframe, nosniff y eventos de JavaScript externos | CP-32 | Corregido en código |
 | Mensajes de desarrollo visibles al ciudadano | Sustituir por textos de atención, privacidad y seguimiento | CP-31 | Corregido en interfaz |
 | Inicio de sesión fallido sin registro | Auditar intento rechazado sin contraseña ni token | CP-36 | Corregido en código |

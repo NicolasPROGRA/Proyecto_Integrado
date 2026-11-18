@@ -13,6 +13,11 @@ Este archivo fue actualizado para reemplazar las instrucciones antiguas del prot
 
 Si PowerShell impide la activación de scripts, **no necesitas cambiar su política**: los archivos `.bat` del proyecto usan directamente el ejecutable Python de `.venv`.
 
+### Si aparece un error al iniciar o al enviar formularios
+
+- **«El sistema no puede encontrar la ruta especificada» al instalar pip:** la carpeta `.venv` puede estar incompleta o apuntar a un Python que ya no existe. En PowerShell, dentro del proyecto, ejecuta `Rename-Item -Path ".venv" -NewName ".venv_anterior"` y vuelve a abrir `INICIAR_WINDOWS.bat`. El iniciador ahora comprueba si Python funciona antes de instalar bibliotecas. Conserva `.env` e `instance`.
+- **«El formulario proviene de un sitio no autorizado» (403):** abre el portal en `http://127.0.0.1:8000`, cierra las pestañas antiguas y recarga con Ctrl+F5. La versión con el comentario `CSRF_LOCAL_COMPAT_V2` en `app/security.py` verifica el token CSRF en el servidor local sin depender de un encabezado Origin que el navegador o proxy pueda cambiar. Para accesos externos se mantienen las comprobaciones adicionales de origen. No desactives el token CSRF para solucionarlo.
+
 ## Qué funciones se implementaron
 
 - **Público:** reclamo, sugerencia, agradecimiento, encuesta anónima y seguimiento privado por folio/código.

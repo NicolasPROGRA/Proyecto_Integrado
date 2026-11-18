@@ -14,21 +14,21 @@ if not exist ".venv\Scripts\python.exe" (
   echo [1/3] Creando entorno virtual...
   py -3.13 -m venv .venv 2>nul
   if errorlevel 1 py -3.12 -m venv .venv 2>nul
-  if errorlevel 1 py -m venv .venv
-  if errorlevel 1 (
-    echo ERROR: No se pudo crear el entorno virtual. Comprueba py -0p
-    pause
-    exit /b 1
-  )
+  if errorlevel 1 py -3.11 -m venv .venv 2>nul
+  if errorlevel 1 py -3 -m venv .venv 2>nul
+  if errorlevel 1 python -m venv .venv
+)
+if not exist ".venv\Scripts\python.exe" goto entorno_invalido
+".venv\Scripts\python.exe" -c "import sys" >nul 2>&1
+if errorlevel 1 goto entorno_invalido
+".venv\Scripts\python.exe" -m pip --version >nul 2>&1
+if errorlevel 1 (
+  echo Preparando el instalador de dependencias de Python...
+  ".venv\Scripts\python.exe" -m ensurepip --upgrade
+  if errorlevel 1 goto pip_invalido
 )
 echo.
 echo [2/3] Instalando / verificando dependencias...
-".venv\Scripts\python.exe" -m pip install --upgrade pip
-if errorlevel 1 (
-  echo ERROR: pip no pudo actualizarse.
-  pause
-  exit /b 1
-)
 ".venv\Scripts\python.exe" -m pip install --prefer-binary -r requirements.txt
 if errorlevel 1 (
   echo ERROR: Fallo la instalacion. Copia las ultimas lineas del error.
@@ -62,3 +62,21 @@ if errorlevel 1 (
   exit /b 1
 )
 pause
+exit /b 0
+
+:entorno_invalido
+echo.
+echo ERROR: El entorno virtual .venv esta incompleto o apunta a otro Python.
+echo En PowerShell, dentro de la carpeta del proyecto, ejecuta:
+echo   Rename-Item -Path ".venv" -NewName ".venv_anterior"
+echo Despues vuelve a ejecutar INICIAR_WINDOWS.bat.
+echo Si no existe .venv, revisa las versiones disponibles con: py -0p
+echo No borres .env ni la carpeta instance.
+pause
+exit /b 1
+
+:pip_invalido
+echo ERROR: Python se encontro, pero no fue posible preparar pip.
+echo Ejecuta: ".venv\Scripts\python.exe" -m ensurepip --upgrade
+pause
+exit /b 1

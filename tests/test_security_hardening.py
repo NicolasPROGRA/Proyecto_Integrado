@@ -4,8 +4,10 @@ import json
 from datetime import datetime, timezone
 
 from itsdangerous import TimestampSigner
+from fastapi.testclient import TestClient
 
 from app.database import SessionLocal
+from app.main import app
 from app.models import Audit, Case
 from app.security import APP_SECRET
 from test_workflow import create_case, csrf, login
@@ -56,15 +58,39 @@ def test_cross_site_origin_is_rejected_even_with_valid_csrf(client):
     token = csrf(client, '/solicitud')
     data = {'csrf_token': token, 'case_type': 'Reclamo', 'facility': 'CESFAM Padre Las Casas',
             'category': 'Trato', 'description': 'Datos ficticios para verificar CSRF y origen.'}
-    rejected = client.post('/solicitud', data=data, headers={'Origin': 'https://sitio-malicioso.invalid'})
+    rejected = client.post('/solicitud', data=data, headers={
+        'Origin': 'https://sitio-malicioso.invalid', 'Sec-Fetch-Site': 'cross-site'})
     assert rejected.status_code == 403
     assert 'sitio no autorizado' in rejected.text
+    rejected_without_origin = client.post('/solicitud', data=data, headers={
+        'Sec-Fetch-Site': 'cross-site'})
+    assert rejected_without_origin.status_code == 403
     with SessionLocal() as db:
         assert db.query(Case).count() == 0
     accepted = client.post('/solicitud', data=data, headers={'Origin': 'http://testserver'})
     assert accepted.status_code == 200
+    # Navegadores modernos indican same-origin aun cuando un proxy local
+    # reconstruye la dirección de destino con otro host.
+    accepted_browser = client.post('/solicitud', data=data, headers={
+        'Origin': 'http://127.0.0.1:8000', 'Sec-Fetch-Site': 'same-origin'})
+    assert accepted_browser.status_code == 200
+    accepted_loopback = client.post('/solicitud', data=data, headers={
+        'Host': '127.0.0.1:8000', 'Origin': 'http://localhost:8000'})
+    assert accepted_loopback.status_code == 200
+    # En el servidor Windows limitado a loopback, un proxy/extensión local
+    # puede informar un Origin distinto. Se conserva la comprobación del token.
+    with TestClient(app, base_url='http://127.0.0.1:8000',
+                    client=('127.0.0.1', 55000)) as local_client:
+        local_data = dict(data, csrf_token=csrf(local_client, '/solicitud'))
+        local_sent = local_client.post('/solicitud', data=local_data, headers={
+            'Origin': 'http://localhost:9090', 'Sec-Fetch-Site': 'cross-site'})
+        assert local_sent.status_code == 200
+        local_bad_token = local_client.post('/solicitud',
+                                            data=dict(local_data, csrf_token='invalido'),
+                                            headers={'Origin': 'http://localhost:9090'})
+        assert local_bad_token.status_code == 403
     with SessionLocal() as db:
-        assert db.query(Case).count() == 1
+        assert db.query(Case).count() == 4
 
 
 def test_revoked_session_cookie_cannot_be_replayed_after_logout(client):

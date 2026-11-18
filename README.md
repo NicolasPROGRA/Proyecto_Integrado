@@ -35,7 +35,11 @@ python -m scripts.exportar_ddl
 python -m scripts.generar_diagrama_bd
 ```
 
+<<<<<<< HEAD
 **59 pruebas aprobadas localmente el 18/11/2026.** Las pruebas automatizadas usan una SQLite temporal aislada para no alterar tu PostgreSQL. Se valida la compilación del DDL PostgreSQL, el modelo normalizado, los formularios, los reportes filtrados, la administración del catálogo, el control de acceso, la política de complejidad de contraseñas nuevas y el cierre de sesión. Las pruebas de laboratorio no sustituyen la demostración en el PostgreSQL real de Windows.
+=======
+**50 pruebas aprobadas localmente el 1/11/2026.** Las pruebas automatizadas usan una SQLite temporal aislada para no alterar tu PostgreSQL. Se valida la compilación del DDL PostgreSQL, el modelo normalizado, los formularios, los reportes filtrados, la administración del catálogo, el control de acceso y el cierre de sesión. El equipo mostró capturas de PostgreSQL 18 conectado con 14 tablas, pero aún debe evidenciar un caso creado, derivado y consultado en su propia base real.
+>>>>>>> bd2488f6258c2b097eee7ba177caee06e80ade3a
 
 ### Informes y categorías (requisitos de ES1 y ES2)
 

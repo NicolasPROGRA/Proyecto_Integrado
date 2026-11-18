@@ -29,3 +29,8 @@ def client():
         db.commit()
     with TestClient(app, follow_redirects=True) as client:
         yield client
+
+
+def pytest_sessionfinish(session, exitstatus):
+    engine.dispose()
+    _testing_dir.cleanup()

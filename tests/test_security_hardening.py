@@ -112,13 +112,31 @@ def test_revoked_session_cookie_cannot_be_replayed_after_logout(client):
 
 def test_session_inactive_more_than_half_hour_requires_new_login(client):
     login(client, 'admin@prueba.local')
+
     old_cookie = client.cookies.get(COOKIE)
+    assert old_cookie
+
     signer = TimestampSigner(APP_SECRET)
     payload = json.loads(base64.b64decode(signer.unsign(old_cookie)))
+
     payload['last_seen'] = datetime.now(timezone.utc).timestamp() - 31 * 60
-    expired_cookie = signer.sign(base64.b64encode(json.dumps(payload).encode())).decode()
-    client.cookies.set(COOKIE, expired_cookie)
-    response = client.get('/funcionarios/reportes', follow_redirects=False)
+
+    expired_cookie = signer.sign(
+        base64.b64encode(json.dumps(payload).encode())
+    ).decode()
+
+    client.cookies.clear()
+
+    response = client.get(
+        '/funcionarios/reportes',
+        headers={'Cookie': f'{COOKIE}={expired_cookie}'},
+        follow_redirects=False
+    )
+
+    # Comprobar que realmente se envió la cookie modificada.
+    assert response.request.headers.get('cookie') == f'{COOKIE}={expired_cookie}'
+
+    # El sistema debe exigir iniciar sesión nuevamente.
     assert response.status_code == 303
     assert 'sesion=finalizada' in response.headers['location']
 
@@ -134,3 +152,4 @@ def test_failed_login_is_audited_without_storing_password(client):
         assert len(events) == 1
         assert events[0].details == {'resultado': 'denegado'}
         assert 'ClaveIncorrecta' not in str(events[0].details)
+

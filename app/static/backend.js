@@ -83,6 +83,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (control.minLength > 0 && control.value.trim() && control.value.trim().length < control.minLength) {
           addProblem(control, `«${fieldName(control)}» necesita al menos ${control.minLength} caracteres.`);
         }
+        if (control.dataset.passwordPolicy === 'complex' && control.value.length >= 12) {
+          const password = control.value;
+          if (!/\p{Lu}/u.test(password) || !/\p{Ll}/u.test(password) ||
+              !/\p{Nd}/u.test(password) || !/[^\p{L}\p{N}\s]/u.test(password)) {
+            addProblem(control, 'La contraseña debe incluir una mayúscula, una minúscula, un número y un símbolo (por ejemplo, ! o #).');
+          }
+        }
       });
 
       if (form.action.endsWith('/solicitud')) {

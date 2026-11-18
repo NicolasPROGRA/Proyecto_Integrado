@@ -73,7 +73,7 @@ El [documento de comprobación para Windows](ES3_POSTGRESQL.md) detalla consulta
 
 ## 4. Seguridad y programación
 
-- Contraseñas protegidas con Argon2; la primera cuenta se crea con `python -m app.crear_admin` sin clave predefinida.
+- Contraseñas protegidas con Argon2; la primera cuenta se crea con `python -m app.crear_admin` sin clave predefinida. Una política de complejidad, comprobada en el servidor tanto al crear funcionarios como al crear la primera cuenta administradora, exige entre 12 y 200 caracteres, mayúscula, minúscula, número y símbolo. El formulario de funcionarios muestra el requisito y bloquea el envío inválido con un mensaje accesible. No se cambia la verificación de inicio de sesión de cuentas anteriores.
 - Cookies de sesión firmadas, `HttpOnly`, `SameSite=Lax` y expiración de dos horas. La opción `COOKIE_SECURE=1` exige HTTPS.
 - Token CSRF verificado en todos los formularios POST. En la ejecución local (`127.0.0.1`/`localhost`), la validez del token evita bloqueos falsos por encabezados Origin alterados por el navegador o un proxy; en conexiones no locales, se comprueban además Origin y Fetch Metadata para rechazar solicitudes ajenas.
 - Revocación de la sesión en servidor mediante eventos inmutables `inicio_sesion` y `cierre_sesion` de auditoría. Una cookie firmada que se copió antes de cerrar sesión queda invalidada; el código también caduca a los 30 minutos sin actividad. No se modifica la estructura de las 14 tablas.
@@ -107,7 +107,7 @@ El [documento de comprobación para Windows](ES3_POSTGRESQL.md) detalla consulta
 
 El protocolo usa `pytest` y `TestClient`, una base SQLite temporal distinta de la real, cuentas ficticias de prueba y reinicialización antes de cada caso. Cada prueba ejecuta un proceso HTTP, verifica respuesta y, cuando corresponde, consulta el registro persistido o el control de permisos.
 
-**Resultado local obtenido el 17/11/2026:** 50 pruebas aprobadas, 0 fallidas. Una advertencia de deprecación `httpx`/`starlette.testclient` no alteró los resultados. El archivo `evidencias/resultado_pruebas_es3.xml` conserva el registro JUnit generado por `pytest`. Estos resultados no equivalen a una ejecución contra la instalación PostgreSQL del estudiante ni reemplazan una prueba manual del historial del navegador.
+**Resultado local actualizado el 18/11/2026:** 59 pruebas aprobadas, 0 fallidas. Una advertencia de deprecación `httpx`/`starlette.testclient` no alteró los resultados. El archivo `evidencias/resultado_pruebas_es3.xml` conserva el registro JUnit generado por `pytest`. Estos resultados no equivalen a una ejecución contra la instalación PostgreSQL del estudiante ni reemplazan una prueba manual del historial del navegador.
 
 | ID | Datos / escenario | Resultado esperado | Resultado observado |
 | --- | --- | --- | --- |
@@ -147,8 +147,9 @@ El protocolo usa `pytest` y `TestClient`, una base SQLite temporal distinta de l
 | CP-34 | Reutilizar cookie antigua tras cerrar sesión | Revocar el identificador en auditoría y negar acceso | HTTP 303/401; auditoría de cierre comprobada; aprobado |
 | CP-35 | Cookie de sesión inactiva 31 minutos | Exigir nueva autenticación | Redirección al login; aprobado |
 | CP-36 | Acceso con contraseña incorrecta | Rechazar sin guardar contraseña; conservar evento de auditoría | HTTP 401 y evento sin secreto; aprobado |
+| CP-37 | Política de complejidad en cuentas nuevas | Rechazar contraseña solo numérica, sin mayúscula/minúscula/número/símbolo o demasiado corta; aceptar una que cumpla y mostrar error en el formulario | 9 pruebas adicionales: rechazos, aceptación y alta de usuario en servidor; aprobado |
 
-Los 36 grupos resumen las 50 funciones de prueba en `tests/test_workflow.py`, `tests/test_es3.py`, `tests/test_es3_modelo.py`, `tests/test_form_errors.py`, `tests/test_session_history.py`, `tests/test_es1_es2_requirements.py` y `tests/test_security_hardening.py`. Los resultados no demuestran ejecución contra PostgreSQL Windows, pruebas institucionales de rendimiento, accesibilidad o seguridad ofensiva. La repetición CP-30 **no es** una prueba de carga concurrente. El caso CP-23 requiere además navegar realmente en un navegador del equipo expositor.
+Los 37 grupos resumen las 59 funciones de prueba en `tests/test_workflow.py`, `tests/test_es3.py`, `tests/test_es3_modelo.py`, `tests/test_form_errors.py`, `tests/test_session_history.py`, `tests/test_es1_es2_requirements.py`, `tests/test_security_hardening.py` y `tests/test_password_policy.py`. Los resultados no demuestran ejecución contra PostgreSQL Windows, pruebas institucionales de rendimiento, accesibilidad o seguridad ofensiva. La repetición CP-30 **no es** una prueba de carga concurrente. El caso CP-23 requiere además navegar realmente en un navegador del equipo expositor.
 
 ## 7. Comparación y mejoras
 

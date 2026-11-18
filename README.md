@@ -7,7 +7,7 @@ Aplicación académica para registrar y gestionar satisfacción usuaria, reclamo
 1. Tener **PostgreSQL 14 o superior** funcionando en Windows y Python **3.12 o 3.13** instalado.
 2. Ejecutar **`CONFIGURAR_POSTGRESQL_WINDOWS.bat`**. Indicar usuario y contraseña de PostgreSQL; la clave se solicita sin mostrarse. El configurador permite crear una base nueva `salud_plc_es3` con confirmación si el usuario tiene permiso.
 3. Ejecutar **`INICIAR_WINDOWS.bat`**. El programa verifica PostgreSQL, crea las 14 tablas y carga los catálogos al iniciar.
-4. Ejecutar **`CREAR_ADMIN_WINDOWS.bat`** en otra ventana para crear el primer administrador (clave de al menos 12 caracteres).
+4. Ejecutar **`CREAR_ADMIN_WINDOWS.bat`** en otra ventana para crear el primer administrador (contraseña de al menos 12 caracteres, con mayúscula, minúscula, número y símbolo).
 5. Abrir <http://127.0.0.1:8000>. El panel interno está en <http://127.0.0.1:8000/funcionarios/login>.
 
 El archivo local `.env` contiene la URL de conexión; **no se debe compartir ni subir a GitHub**. El configurador no envía la contraseña a este chat.
@@ -35,7 +35,7 @@ python -m scripts.exportar_ddl
 python -m scripts.generar_diagrama_bd
 ```
 
-**50 pruebas aprobadas localmente el 17/11/2026.** Las pruebas automatizadas usan una SQLite temporal aislada para no alterar tu PostgreSQL. Se valida la compilación del DDL PostgreSQL, el modelo normalizado, los formularios, los reportes filtrados, la administración del catálogo, el control de acceso y el cierre de sesión. El equipo mostró capturas de PostgreSQL 18 conectado con 14 tablas, pero aún debe evidenciar un caso creado, derivado y consultado en su propia base real.
+**59 pruebas aprobadas localmente el 18/11/2026.** Las pruebas automatizadas usan una SQLite temporal aislada para no alterar tu PostgreSQL. Se valida la compilación del DDL PostgreSQL, el modelo normalizado, los formularios, los reportes filtrados, la administración del catálogo, el control de acceso, la política de complejidad de contraseñas nuevas y el cierre de sesión. Las pruebas de laboratorio no sustituyen la demostración en el PostgreSQL real de Windows.
 
 ### Informes y categorías (requisitos de ES1 y ES2)
 

@@ -11,6 +11,21 @@ from .database import INSTANCE
 
 password_hasher = PasswordHasher()
 
+PASSWORD_POLICY_MESSAGE = (
+    'La contraseña debe tener entre 12 y 200 caracteres e incluir '
+    'al menos una mayúscula, una minúscula, un número y un símbolo (por ejemplo, ! o #).'
+)
+
+def valid_new_password(raw: str) -> bool:
+    """Política de complejidad para contraseñas nuevas, sin afectar los inicios de sesión existentes."""
+    return (
+        12 <= len(raw) <= 200
+        and any(char.isupper() for char in raw)
+        and any(char.islower() for char in raw)
+        and any(char.isdigit() for char in raw)
+        and any(not char.isalnum() and not char.isspace() for char in raw)
+    )
+
 def session_secret():
     import os
     val = os.getenv('SESSION_SECRET')

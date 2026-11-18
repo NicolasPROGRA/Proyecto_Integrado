@@ -6,7 +6,7 @@ Este archivo fue actualizado para reemplazar las instrucciones antiguas del prot
 
 3. Ejecuta `CONFIGURAR_POSTGRESQL_WINDOWS.bat`; selecciona la base `salud_plc_es3` y verifica la conexión con el PostgreSQL.
 4. Ejecuta `INICIAR_WINDOWS.bat`; el programa valida el esquema de 14 tablas y arranca el servidor local.
-5. Si no creaste una cuenta administrativa, ejecuta `CREAR_ADMIN_WINDOWS.bat` y elige una contraseña de al menos 12 caracteres.
+5. Si no creaste una cuenta administrativa, ejecuta `CREAR_ADMIN_WINDOWS.bat` y elige una contraseña de al menos 12 caracteres, con mayúscula, minúscula, número y símbolo.
 6. Abre <http://127.0.0.1:8000> para el portal o <http://127.0.0.1:8000/funcionarios/login> para Gestión.
 
 Si PowerShell impide la activación de scripts, **no necesitas cambiar su política**: los archivos `.bat` del proyecto usan directamente el ejecutable Python de `.venv`.

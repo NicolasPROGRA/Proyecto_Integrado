@@ -6,16 +6,20 @@ import getpass
 from sqlalchemy import select
 from .database import init_database, SessionLocal
 from .models import Unit, Staff, Role
-from .security import hash_password
+from .security import hash_password, valid_new_password, PASSWORD_POLICY_MESSAGE
 
 def main():
     init_database()
     print('Crear administrador del entorno local de desarrollo')
     name = input('Nombre completo: ').strip()
     email = input('Correo electrónico: ').strip().lower()
-    password = getpass.getpass('Contraseña (mínimo 12 caracteres): ')
+    print(PASSWORD_POLICY_MESSAGE)
+    password = getpass.getpass('Contraseña: ')
     confirm = getpass.getpass('Repetir contraseña: ')
-    if len(name) < 3 or '@' not in email or len(password) < 12 or password != confirm:
+    if not valid_new_password(password):
+        print(PASSWORD_POLICY_MESSAGE + ' No se creó la cuenta.')
+        return
+    if len(name) < 3 or '@' not in email or password != confirm:
         print('Datos inválidos o contraseñas distintas. No se creó la cuenta.')
         return
     with SessionLocal() as db:

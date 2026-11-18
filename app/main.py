@@ -30,7 +30,7 @@ from fastapi.templating import Jinja2Templates
 from .database import get_db, init_database, catalog, INSTANCE, SessionLocal
 from .models import (Unit, Role, Staff, Case, CaseEvent, Survey, SurveyQuestion,
                      RecordType, Channel, Category, CaseStatus, Citizen, Attachment, Audit)
-from .security import APP_SECRET, ROLES, hash_password, verify_password, new_folio, new_tracking_code, tracking_hash, check_tracking, csrf_for, verify_csrf, can_view_case, can_edit_case, can_reassign
+from .security import APP_SECRET, ROLES, hash_password, verify_password, new_folio, new_tracking_code, tracking_hash, check_tracking, csrf_for, verify_csrf, can_view_case, can_edit_case, can_reassign, valid_new_password, PASSWORD_POLICY_MESSAGE
 
 BASE = Path(__file__).resolve().parent
 PRIVATE_DIR = INSTANCE / 'private_uploads'
@@ -664,8 +664,10 @@ async def add_staff(request: Request, db: Session = Depends(get_db)):
     role = form_str(form, 'role', 30)
     try: unit_id = int(form_str(form, 'unit_id', 10))
     except ValueError: raise HTTPException(400, 'Unidad inválida')
-    if (len(name) < 3 or '@' not in email or len(pwd) < 12 or role not in ROLES or not db.get(Unit, unit_id) or db.scalar(select(Staff).where(Staff.email == email))):
-        return render(request, db, 'equipo.html', status_code=400, error='Revisa los datos: correo único, contraseña de al menos 12 caracteres, rol y unidad válidos.',
+    password_valid = valid_new_password(pwd)
+    if (len(name) < 3 or '@' not in email or not password_valid or role not in ROLES or not db.get(Unit, unit_id) or db.scalar(select(Staff).where(Staff.email == email))):
+        error = PASSWORD_POLICY_MESSAGE if not password_valid else 'Revisa los datos: correo único, nombre, rol y unidad válidos.'
+        return render(request, db, 'equipo.html', status_code=400, error=error,
                       values={'name': name, 'email': email, 'role': role, 'unit_id': str(unit_id)},
                       users=list(db.scalars(select(Staff))), units=list(db.scalars(select(Unit))))
     role_row = catalog(db, Role, 'code', role)

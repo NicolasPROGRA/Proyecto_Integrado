@@ -19,7 +19,7 @@ No equivale a una auditoría de seguridad ni a pruebas de rendimiento de un sist
 
 ## Ampliación ES3 del 17 de noviembre de 2026
 
-Se ejecutaron **50 pruebas automáticas, con 50 aprobadas y 0 fallidas**, usando una SQLite temporal separada del PostgreSQL del equipo. El resultado reproducible está en `evidencias/resultado_pruebas_es3.xml`; la matriz detallada se encuentra en `ES3_IMPLEMENTACION.md`. Se agregaron siete tests de regresión ES1/ES2 y seis tests de seguridad (textos de interfaz, cabeceras de protección, origen de solicitudes, reutilización de una cookie revocada, inactividad y auditoría de acceso fallido). Las consultas repetidas no sustituyen pruebas de carga concurrente.
+Actualización del **18 de noviembre de 2026:** se ejecutaron **59 pruebas automáticas, con 59 aprobadas y 0 fallidas**, usando una SQLite temporal separada del PostgreSQL del equipo. El resultado reproducible está en `evidencias/resultado_pruebas_es3.xml`; la matriz detallada se encuentra en `ES3_IMPLEMENTACION.md`. Se agregaron pruebas de regresión ES1/ES2, seguridad y nueve comprobaciones de complejidad de contraseñas nuevas. Las consultas repetidas no sustituyen pruebas de carga concurrente.
 
 | ID | Nueva comprobación | Resultado automático |
 | --- | --- | --- |
@@ -29,5 +29,6 @@ Se ejecutaron **50 pruebas automáticas, con 50 aprobadas y 0 fallidas**, usando
 | P-14 | Endpoint de sesión tras salir | HTTP 401 sin información personal |
 | P-15 | Pantallas privadas sin almacenamiento en caché | Cabeceras `private`, `no-store` y validación de código `pageshow`/`pagehide` |
 | P-16 | Nuevo inicio de sesión después de salir | Acceso recuperado tras autenticación válida |
+| P-17 | Política de complejidad de contraseñas nuevas | `123456789012` y otros ejemplos débiles rechazados; no se crea el usuario; una clave con 12+ caracteres, mayúscula, minúscula, número y símbolo sí permite el alta |
 
 **Comprobación manual pendiente:** probar el botón Atrás/Adelante de Chrome o Edge en Windows después del cierre de sesión, guardar la captura del aviso y repetir la prueba sobre PostgreSQL real. Estas pruebas automatizadas verifican el control del servidor, pero no sustituyen una revisión visual del historial del navegador.
